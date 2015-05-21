@@ -50,6 +50,8 @@ class Main
   end
 
   def emit_value val
+    return '' if val.nil?
+
     case val
     when Array
       emit_array(val)
@@ -61,23 +63,29 @@ class Main
   end
 
   def emit_array val
+    return '' if val.nil?
+
     nl = "\n"
     indent = "    "
     output = nl.dup
 
     val.each do |elem|
+      next if elem.nil?
       output << indent << elem << nl
     end
     output << nl
   end
 
   def emit_hash val
+    return '' if val.nil?
+
     nl = "\n"
     indent = "    "
     output = nl.dup
 
     val.each do |key,elem|
-      output << indent << "#{key}: " << indent << emit_value(elem) << nl
+      next if key.nil? || elem.nil?
+      output << indent << "#{key}: " << emit_value(elem) << nl
     end
     output
   end
