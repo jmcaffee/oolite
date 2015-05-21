@@ -1,0 +1,45 @@
+#!/usr/bin/env ruby
+# encoding: utf-8
+# vim: set ft=ruby
+##############################################################################
+# File::    ooupdatemarket
+# Purpose:: Parse the Oolite save file and generate market info based on the
+#           current docked location's market
+#
+# Author::    Jeff McAffee 05/19/2015
+# Copyright:: Copyright (c) 2015, kTech Systems LLC. All rights reserved.
+# Website::   http://ktechsystems.com
+##############################################################################
+
+require 'pathname'
+begin
+  require 'oolite'
+rescue LoadError
+  $LOAD_PATH.unshift(File.expand_path("../../lib", __FILE__))
+  require 'oolite'
+end
+
+
+class Main
+
+  def execute
+    savefile = Oolite.configuration.save_file_path
+    if savefile.nil? || savefile.empty?
+      fail "save file path not set.\nUse 'ooconfig save_file_path YOUR_PATH' to set."
+    end
+
+    market = Oolite::Market.new
+    market.update
+    market.write_csv
+  end
+end
+
+if ARGV.count > 0 && ARGV.first.downcase == 'upgrade'
+  market = Oolite::Market.new
+  market.upgrade
+elsif ARGV.count > 0 && ARGV.first.downcase == 'upgradeprice'
+  market = Oolite::Market.new
+  market.upgrade_price
+else
+  Main.new.execute
+end

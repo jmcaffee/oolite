@@ -1,0 +1,40 @@
+#!/usr/bin/env ruby
+# encoding: utf-8
+# vim: set ft=ruby
+##############################################################################
+# File::    ootrader
+# Purpose:: Determine the best items to buy based on the current location
+#           and the next destination
+#
+# Author::    Jeff McAffee 05/20/2015
+# Copyright:: Copyright (c) 2015, kTech Systems LLC. All rights reserved.
+# Website::   http://ktechsystems.com
+##############################################################################
+
+require 'pathname'
+begin
+  require 'oolite'
+rescue LoadError
+  $LOAD_PATH.unshift(File.expand_path("../../lib", __FILE__))
+  require 'oolite'
+end
+
+
+class Main
+
+  def execute
+    savefile = Oolite.configuration.save_file_path
+    if savefile.nil? || savefile.empty?
+      fail "save file path not set.\nUse 'ooconfig save_file_path YOUR_PATH' to set."
+    end
+
+    # Update the market file so we're working with the latest data.
+    market = Oolite::Market.new
+    market.update
+
+    # Display the best trades.
+    trader = Oolite::Trade.new.display
+  end
+end
+
+Main.new.execute

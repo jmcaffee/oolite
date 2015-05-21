@@ -1,0 +1,168 @@
+#!/usr/bin/env ruby
+# encoding: utf-8
+# vim: set ft=ruby
+##############################################################################
+# File::    ooconfig
+# Purpose:: Configure the oolite utility
+#
+# Author::    Jeff McAffee 05/20/2015
+# Copyright:: Copyright (c) 2015, kTech Systems LLC. All rights reserved.
+# Website::   http://ktechsystems.com
+##############################################################################
+
+require 'pathname'
+begin
+  require 'oolite'
+rescue LoadError
+  $LOAD_PATH.unshift(File.expand_path("../../lib", __FILE__))
+  require 'oolite'
+end
+
+
+class Main
+
+  private
+
+  def usage
+    puts "Usage: #{File.basename($0)} [ CMD  |  OPTION  VALUE ]"
+    puts
+    puts "  Available commands:"
+    puts "    show:   show current configuration settings"
+    puts "    path:   show location of config file (if found)"
+    puts "    update CATEGORY VALUES: update a category item"
+    puts "      categories:"
+    puts "        systems: accepts (in order) NAME ECONOMY GOVERNMENT TECHLEVEL"
+    puts
+    puts "  Available options:"
+    puts "    save_file_path:   path to Oolite save file (~ is allowed)"
+    puts
+  end
+
+  def current_settings
+    puts "= Current Configuration Settings ="
+    puts
+    Oolite.configure do |config|
+      vars = config.instance_variables.map { |v| v.to_s.gsub('@','') }
+      vars.each do |var|
+        puts "#{var}: #{emit_value(config.send(var))}"
+      end
+    end
+  end
+
+  def emit_value val
+    case val
+    when Array
+      emit_array(val)
+    when Hash
+      emit_hash(val)
+    else
+      return val
+    end
+  end
+
+  def emit_array val
+    nl = "\n"
+    indent = "    "
+    output = nl.dup
+
+    val.each do |elem|
+      output << indent << elem << nl
+    end
+    output << nl
+  end
+
+  def emit_hash val
+    nl = "\n"
+    indent = "    "
+    output = nl.dup
+
+    val.each do |key,elem|
+      output << indent << "#{key}: " << indent << emit_value(elem) << nl
+    end
+    output
+  end
+
+  def set_config_values args
+    Oolite.configure do |config|
+      while args.count > 0
+        var = args.shift
+        val = args.shift
+        config.send("#{var}=", val)
+      end
+    end
+
+    Oolite.save_configuration
+  end
+
+  def system_data args
+    econ = args.shift
+    gov = args.shift
+    tech = args.shift
+
+    data = Hash.new
+    data[:economy] = econ unless econ.nil?
+    data[:government] = gov unless gov.nil?
+    data[:tech_level] = tech unless tech.nil?
+
+    data
+  end
+
+  def update args
+    category = args.shift
+    case category
+    when "systems"
+      Oolite.configure do |config|
+        name = args.shift
+        val = config.systems.fetch(name, Hash.new)
+        #val = val.merge( { name => system_data(args) } )
+        val = val.merge( system_data(args) )
+        config.systems[name] = val
+      end
+
+      Oolite.save_configuration
+    else
+      puts "Unknown category: #{category}"
+    end
+  end
+
+  def process_cmd args
+    return false unless args.count > 0
+
+    if args.first.downcase == 'show'
+      current_settings
+      return true
+    end
+
+    if args.first.downcase == 'path'
+      path = Oolite.find_config_path
+      path = 'Not found' if path.nil? || path.to_s.empty?
+      puts "path: #{path}"
+      return true
+    end
+
+    if args.first.downcase == 'update'
+      args.shift
+      update args
+      return true
+    end
+  end
+
+  public
+
+  def execute args
+    if process_cmd(args)
+      return 0
+    end
+
+    if args.count < 2
+
+      usage
+      return 1
+    end
+
+    set_config_values args
+  end
+end
+
+Main.new.execute ARGV
+
