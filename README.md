@@ -96,6 +96,10 @@ Now see what it suggests for trades
 **Note:** you'll need to visit more than one system, save your game,
 and run `ooupdatemarket` before you'll be able to choose any destinations.
 
+* In game, make your trades/purchases
+* Travel to your destination
+* Profit
+
 ## About This Project
 
 These scripts were thrown together over the course of a couple of days.
