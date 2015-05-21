@@ -35,7 +35,7 @@ the gem as detailed above to provide the following commands:
 `ooconfig` displays and edits the configuration file.
 
 The oolite scripts will look for the config file starting in your current directory
-and ascending the directory tree until it reaches the root, then looks in your _home_
+and ascending the directory tree until it reaches the root, then look in your _home_
 directory. I would suggest running your initial configuration from your home dir
 so the scripts can always find the config file no matter where you call them from.
 
@@ -77,6 +77,24 @@ display its suggested trades to make the most profit.
 
 It uses the current market data, your available credits and max cargo space
 to make its suggestions.
+
+## Workflow (Gameflow?)
+
+* Dock your ship in game
+* Sell your current cargo
+* Refuel you ship
+* Save your game
+
+In a terminal, update your market data
+
+    ooupdatemarket
+
+Now see what it suggests for trades
+
+    ootrader
+
+**Note:** you'll need to visit more than one system, save your game,
+and run `ooupdatemarket` before you'll be able to choose any destinations.
 
 ## About This Project
 
