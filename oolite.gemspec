@@ -8,8 +8,8 @@ Gem::Specification.new do |spec|
   spec.version       = Oolite::VERSION
   spec.authors       = ["Jeff McAffee"]
   spec.email         = ["jeff@ktechsystems.com"]
-  spec.summary       = %q{TODO: Write a short summary. Required.}
-  spec.description   = %q{TODO: Write a longer description. Optional.}
+  spec.summary       = %q{Utility scripts for the Oolite game}
+  spec.description   = %q{Utility scripts for tracking markets and assisting with trading in the Oolite game.}
   spec.homepage      = ""
   spec.license       = "MIT"
 
@@ -20,4 +20,6 @@ Gem::Specification.new do |spec|
 
   spec.add_development_dependency "bundler", "~> 1.7"
   spec.add_development_dependency "rake", "~> 10.0"
+
+  spec.add_runtime_dependency "nokogiri", "~> 1.6"
 end
