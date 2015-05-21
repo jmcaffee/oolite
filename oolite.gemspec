@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
   spec.email         = ["jeff@ktechsystems.com"]
   spec.summary       = %q{Utility scripts for the Oolite game}
   spec.description   = %q{Utility scripts for tracking markets and assisting with trading in the Oolite game.}
-  spec.homepage      = ""
+  spec.homepage      = "https://github.com/jmcaffee/oolite"
   spec.license       = "MIT"
 
   spec.files         = `git ls-files -z`.split("\x0")
