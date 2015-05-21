@@ -1,6 +1,6 @@
 # Oolite
 
-Utility scripts for monitoring the Oolite game's system markets and
+Utility scripts for monitoring the [Oolite](http://www.oolite.org/) game's system markets and
 providing trading suggestions based on the market data.
 
 ## Installation
