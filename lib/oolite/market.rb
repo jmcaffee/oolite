@@ -115,9 +115,9 @@ module Oolite
         config.current_system_name = system
 
         unless config.systems.key?(system)
-          details = { economy: nil,
-                      government: nil,
-                      tech_level: nil,
+          details = { economy: '',
+                      government: '',
+                      tech_level: '',
           }
           config.systems[system] = details
         end
