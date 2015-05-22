@@ -183,6 +183,7 @@ require 'yaml'
 # Initialize the configuration
 Oolite.configure
 
+require 'oolite/console'
 require 'oolite/csv_doc'
 require 'oolite/save_file'
 require 'oolite/market_file'

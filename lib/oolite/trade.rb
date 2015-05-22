@@ -13,6 +13,8 @@ require 'yaml'
 
 module Oolite
   class Trade
+    include Console
+
     def systems_data
       @systems_data ||= Oolite.configuration.systems
     end
@@ -85,11 +87,6 @@ module Oolite
     end
 
     private
-
-    def ask msg
-      print "#{msg}"
-      val = STDIN.getc
-    end
 
     def current_system_name
       Oolite.configuration.current_system_name
