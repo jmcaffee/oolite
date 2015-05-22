@@ -13,10 +13,26 @@ require 'yaml'
 
 module Oolite
   class Trade
+    def systems_data
+      @systems_data ||= Oolite.configuration.systems
+    end
+
+    def system_info sys_name
+        info = ''
+        if systems_data.key? sys_name
+          econ = systems_data[sys_name][:economy]
+          gov = systems_data[sys_name][:government]
+          tech = systems_data[sys_name][:tech_level]
+
+          info = "(#{econ} - #{gov} - #{tech.to_s})"
+        end
+        info
+    end
+
     def display
       puts "= Oolite Trader ="
       puts
-      puts "  Current Location: #{current_system_name}"
+      puts "  Current Location: #{current_system_name} #{system_info(current_system_name)}"
       puts
       puts "  Available destinations:"
       puts
@@ -24,7 +40,8 @@ module Oolite
       systems = market.systems
       systems.delete current_system_name
       systems.each_with_index do |sys,i|
-        puts "      #{i} - #{sys}"
+        info = system_info sys
+        puts "      #{i.to_s.ljust(4)} - #{sys.ljust(14)} #{info.ljust(50)}"
       end
       puts
       choice = ask "    Choose your destination (q to abort): "
@@ -46,7 +63,7 @@ module Oolite
 
       puts
 
-      puts "  -- Suggested Transactions for #{dest_system} --"
+      puts "  -- Suggested Transactions for #{current_system_name} to #{dest_system} Route --"
       puts
       puts "    #{'Item'.ljust(14)} #{'Purch Amt'.to_s.ljust(10)} #{'Profit'.to_s.rjust(8)}"
       puts
