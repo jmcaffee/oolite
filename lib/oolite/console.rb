@@ -11,7 +11,7 @@ module Oolite
   module Console
     def ask msg
       print "#{msg}"
-      val = STDIN.getc
+      STDIN.getc
     end
   end
 end # module
