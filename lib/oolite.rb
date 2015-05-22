@@ -1,4 +1,5 @@
 require "oolite/version"
+require 'pathname'
 
 if ENV['DEBUG'].nil?
   $debug = false
@@ -184,6 +185,8 @@ require 'yaml'
 Oolite.configure
 
 require 'oolite/console'
+require 'oolite/system_data'
+require 'oolite/systems_data'
 require 'oolite/csv_doc'
 require 'oolite/save_file'
 require 'oolite/market_file'

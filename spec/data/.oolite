@@ -1,0 +1,142 @@
+--- !ruby/object:Oolite::Configuration
+save_file_path: "/home/jeff/Jameson.oolite-save"
+market_data_filename: oolite.market
+current_system_name: Edinso
+current_credits: 39558
+cargo: 35
+trade_contraband: false
+contraband:
+- Slaves
+- Narcotics
+- Firearms
+economies:
+- Rich Industrial
+- Average Industrial
+- Poor Industrial
+- Mainly Industrial
+- Mainly Agricultural
+- Rich Agricultural
+- Average Agricultural
+- Poor Agricultural
+governments:
+- Anarchy
+- Feudal
+- Multi-Government
+- Dictatorship
+- Communist
+- Confederacy
+- Democracy
+- Corporate State
+systems:
+  Ensoreus:
+    :economy: Rich Industrial
+    :government: Corporate State
+    :tech_level: '12'
+  Isinor:
+    :economy: Poor Agricultural
+    :government: Confederacy
+    :tech_level: '7'
+  Qutiri:
+    :economy: Rich Industrial
+    :government: Multi-Government
+    :tech_level: '9'
+  Zaonce:
+    :economy: Average Industrial
+    :government: Corporate State
+    :tech_level: '12'
+  Tionisla:
+    :economy: Average Industrial
+    :government: Democracy
+    :tech_level: '12'
+  Bemaera:
+    :economy: Average Agricultural
+    :government: Multi-Government
+    :tech_level: '4'
+  Ontiat:
+    :economy: Average Agricultural
+    :government: Confederacy
+    :tech_level: '6'
+  Xeesle:
+    :economy: Mainly Industrial
+    :government: Feudal
+    :tech_level: '7'
+  Aronar:
+    :economy: Poor Industrial
+    :government: Feudal
+    :tech_level: '8'
+  Aesbion:
+    :economy: Mainly Industrial
+    :government: Corporate State
+    :tech_level: '10'
+  Lave:
+    :economy: Rich Agricultural
+    :government: Dictatorship
+    :tech_level: '5'
+  Esesla:
+    :economy: Average Agricultural
+    :government: Multi-Government
+    :tech_level: '4'
+  Zalela:
+    :economy: Average Agricultural
+    :government: Feudal
+    :tech_level: '5'
+  Erlaza:
+    :economy: Average Agricultural
+    :government: Dictatorship
+    :tech_level: '6'
+  Leesti:
+    :economy: Poor Industrial
+    :government: Corporate State
+    :tech_level: '11'
+  Diso:
+    :economy: Average Agricultural
+    :government: Democracy
+    :tech_level: '8'
+  Orerve:
+    :economy: Mainly Industrial
+    :government: Feudal
+    :tech_level: '6'
+  Riedquat:
+    :economy: Poor Agricultural
+    :government: Anarchy
+    :tech_level: '4'
+  Reorte:
+    :economy: Poor Agricultural
+    :government: Dictatorship
+    :tech_level: '6'
+  Quator:
+    :economy: Mainly Industrial
+    :government: Anarchy
+    :tech_level: '7'
+  Orrere:
+    :economy: Poor Agricultural
+    :government: Corporate State
+    :tech_level: '7'
+  Uszaa:
+    :economy: Mainly Industrial
+    :government: Anarchy
+    :tech_level: '8'
+  Ra:
+    :economy: Poor Agricultural
+    :government: Corporate State
+    :tech_level: '5'
+  Relaes:
+    :economy: Average Industrial
+    :government: Communist
+    :tech_level: '11'
+  Zasoer:
+    :economy: Average Agricultural
+    :government: Confederacy
+    :tech_level: '5'
+  Azaqu:
+    :economy: Average Agricultural
+    :government: Democracy
+    :tech_level: '7'
+  Begeabi:
+    :economy: Poor Agricultural
+    :government: Feudal
+    :tech_level: '2'
+  Edinso:
+    :economy: ''
+    :government: ''
+    :tech_level: ''
