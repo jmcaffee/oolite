@@ -74,7 +74,7 @@ RSpec.configure do |config|
   # Print the 10 slowest examples and example groups at the
   # end of the spec run, to help surface which specs are running
   # particularly slow.
-  config.profile_examples = 10
+  #config.profile_examples = 10
 
   # Run specs in random order to surface order dependencies. If you find an
   # order dependency and want to debug it, you can fix the order by providing
@@ -93,6 +93,7 @@ end
 lib_dir = File.expand_path('../../lib', __FILE__)
 $LOAD_PATH.unshift(lib_dir) unless $LOAD_PATH.include?(lib_dir)
 
+require 'fileutils'
 require 'oolite'
 include Oolite
 
@@ -103,3 +104,17 @@ def test_data_dir sub_path = nil
   path.to_s
 end
 
+def temp_from_data_dir sub_path = nil
+  src = test_data_dir sub_path
+  dest = Pathname('tmp') + sub_path
+  dest.delete if dest.exist?
+  FileUtils.cp src, dest
+  dest
+end
+
+def file_contains file, needle
+  File.open(file, 'r').each do |ln|
+    return true if ln.include? needle
+  end
+  return false
+end
