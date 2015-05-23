@@ -16,13 +16,13 @@ module Oolite
     include Console
 
     def systems_data
-      @systems_data ||= SystemsData.systems
+      @systems_data ||= SystemsData
     end
 
     def system_info sys_name
         info = ''
         if systems_data.names.include? sys_name
-          sys_data = systems_data[sys_name]
+          sys_data = systems_data.systems[sys_name]
 
           econ = sys_data.economy
           gov = sys_data.government
@@ -37,7 +37,7 @@ module Oolite
       need_update = false
       need_update = true if !systems_data.names.include? sys_name
       unless need_update
-        sys_data = systems_data[sys_name]
+        sys_data = systems_data.systems[sys_name]
         need_update = true if !sys_data.all_data_present?
       end
 
@@ -183,6 +183,12 @@ module Oolite
       end
     end
 
+    #
+    # Calculate and return all *profitable* trades.
+    #
+    # Returned trades are sorted most expensive to least
+    #
+
     def calculate_all_trades dest_system
       src = market.data[current_system_name]
       dest = market.data[dest_system]
@@ -194,7 +200,7 @@ module Oolite
         end
       end
 
-      positive_trades = Array.new
+      profitable_trades = Array.new
 
       src.keys.each do |item|
         sprice = src[item][:price]
@@ -203,18 +209,26 @@ module Oolite
 
         revenue = dprice - sprice
         if revenue > 0.0 && amount > 0
-          positive_trades << TradeItem.new(item, amount, sprice, revenue)
+          profitable_trades << TradeItem.new(item, amount, sprice, revenue)
         end
       end
 
-      positive_trades.sort { |a,b| b.revenue <=> a.revenue }
+      profitable_trades.sort { |a,b| b.revenue <=> a.revenue }
     end
 
+    #
+    # Calculate the most profitable trades.
+    #
+    # We calculate 2 ways, buying the most expensive (and generally the
+    # most profitable) trades, then buying the cheapest first. The most
+    # profit determines the suggested trades.
+    #
+
     def calc_best_trades trades
-      avail_cargo = Oolite.configuration.cargo
+      max_cargo = Oolite.configuration.cargo
       credits = Oolite.configuration.current_credits
 
-      if avail_cargo <= 0
+      if max_cargo <= 0
         return [[], 0]
       end
 
@@ -229,59 +243,61 @@ module Oolite
         return [[], 0]
       end
 
-      balance = credits
-      cargo = avail_cargo
-      suggested_trades_expensive_first = []
-      affordable_trades.each do |trade|
-        max_amt_by_price = balance / trade.cost
-        max_amt_by_cargo = [cargo, trade.amount].min
-        max_amt = [max_amt_by_price, max_amt_by_cargo].min
+      suggested_trades_exp = calc_trades(credits, max_cargo, affordable_trades)
+      total_profit_exp = calc_total_profit(suggested_trades_exp)
 
-        balance = balance - (max_amt * trade.cost)
-        cargo = cargo - max_amt
+      # Sort the trades in ascending order (cheapest first).
+      affordable_trades_asc = affordable_trades.sort { |a,b| a.revenue <=> b.revenue }
 
-        if max_amt > 0
-          transaction = { item: trade, amount: max_amt }
-          suggested_trades_expensive_first << transaction.dup
-        end
-      end
+      suggested_trades_cheap = calc_trades(credits, max_cargo, affordable_trades_asc)
+      total_profit_cheap = calc_total_profit(suggested_trades_cheap)
 
-      expensive_first_total_profit = 0
-      suggested_trades_expensive_first.each do |transaction|
-        profit = transaction[:item].revenue * transaction[:amount]
-        expensive_first_total_profit += profit
-      end
-
-      balance = credits
-      cargo = avail_cargo
-      suggested_trades_cheap_first = []
-      # Sort the trades in ascending order.
-      cheap_affordable_trades = affordable_trades.sort { |a,b| a.revenue <=> b.revenue }
-      cheap_affordable_trades.each do |trade|
-        max_amt_by_price = balance / trade.cost
-        max_amt_by_cargo = [cargo, trade.amount].min
-        max_amt = [max_amt_by_price, max_amt_by_cargo].min
-
-        balance = balance - (max_amt * trade.cost)
-        cargo = cargo - max_amt
-
-        if max_amt > 0
-          transaction = { item: trade, amount: max_amt }
-          suggested_trades_cheap_first << transaction.dup
-        end
-      end
-
-      cheap_first_total_profit = 0
-      suggested_trades_cheap_first.each do |transaction|
-        profit = transaction[:item].revenue * transaction[:amount]
-        cheap_first_total_profit += profit
-      end
-
-      if expensive_first_total_profit > cheap_first_total_profit
-        return [suggested_trades_expensive_first, expensive_first_total_profit]
+      if total_profit_exp > total_profit_cheap
+        return [suggested_trades_exp, total_profit_exp]
       else
-        return [suggested_trades_cheap_first, cheap_first_total_profit]
+        return [suggested_trades_cheap, total_profit_cheap]
       end
+    end
+
+    #
+    # Calculate the best trades using available credits, cargo and profitable trades
+    #
+
+    def calc_trades credits, cargo, trades
+      suggested_trades = []
+
+      trades.each do |trade|
+        # We're limited by how much we can buy,
+        max_amt_by_price = credits / trade.cost
+        # and cargo space versus amount for sale.
+        max_amt_by_cargo = [cargo, trade.amount].min
+        max_amt = [max_amt_by_price, max_amt_by_cargo].min
+
+        credits = credits - (max_amt * trade.cost)
+        cargo = cargo - max_amt
+
+        if max_amt > 0
+          transaction = { item: trade, amount: max_amt }
+          suggested_trades << transaction.dup
+        end
+      end
+
+      suggested_trades
+    end
+
+    #
+    # Calculate the total anticipated profit if all trades are transacted.
+    #
+
+    def calc_total_profit trades
+      total_profit = 0
+
+      trades.each do |transaction|
+        profit = transaction[:item].revenue * transaction[:amount]
+        total_profit += profit
+      end
+
+      total_profit
     end
   end
 end
