@@ -138,25 +138,25 @@ module Oolite
       ]
 
       @economies = [
-        "Rich Industrial",
-        "Average Industrial",
-        "Poor Industrial",
-        "Mainly Industrial",
-        "Mainly Agricultural",
-        "Rich Agricultural",
         "Average Agricultural",
+        "Average Industrial",
+        "Mainly Agricultural",
+        "Mainly Industrial",
         "Poor Agricultural"
+        "Poor Industrial",
+        "Rich Agricultural",
+        "Rich Industrial",
       ]
 
       @governments = [
         "Anarchy",
-        "Feudal",
-        "Multi-Government",
-        "Dictatorship",
         "Communist",
         "Confederacy",
+        "Corporate State",
         "Democracy",
-        "Corporate State"
+        "Dictatorship",
+        "Feudal",
+        "Multi-Government",
       ]
 
       @systems = Hash.new
