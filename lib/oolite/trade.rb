@@ -16,24 +16,85 @@ module Oolite
     include Console
 
     def systems_data
-      @systems_data ||= Oolite.configuration.systems
+      @systems_data ||= SystemsData.systems
     end
 
     def system_info sys_name
         info = ''
-        if systems_data.key? sys_name
-          econ = systems_data[sys_name][:economy]
-          gov = systems_data[sys_name][:government]
-          tech = systems_data[sys_name][:tech_level]
+        if systems_data.names.include? sys_name
+          sys_data = systems_data[sys_name]
+
+          econ = sys_data.economy
+          gov = sys_data.government
+          tech = sys_data.tech_level
 
           info = "(#{econ} - #{gov} - #{tech.to_s})"
         end
         info
     end
 
+    def ask_user_to_update_system_data sys_name
+      need_update = false
+      need_update = true if !systems_data.names.include? sys_name
+      unless need_update
+        sys_data = systems_data[sys_name]
+        need_update = true if !sys_data.all_data_present?
+      end
+
+      return unless need_update
+
+      if need_update
+        puts "We need to update our records for #{sys_name}"
+        result = ask "Would you like to update now (<Enter> or n)? "
+        return if result.downcase == 'n'
+      end
+
+      collect_system_data sys_name
+    end
+
+    def collect_system_data sys_name
+      econs = Oolite.configuration.economies
+      govs = Oolite.configuration.governments
+
+      puts "  #{sys_name}"
+      puts
+      puts "    Economy:"
+      econs.each_with_index do |econ,i|
+        puts "      #{i} - #{econ}"
+      end
+      puts
+      econ_index = ask " Choice? "
+
+      puts
+      puts "    Government:"
+      govs.each_with_index do |gov,i|
+        puts "      #{i} - #{gov}"
+      end
+      puts
+      gov_index = ask " Choice? "
+
+      puts
+      puts "    Tech Level:"
+      puts
+      tech_level = ask " Choice (1-12)? "
+
+      sys_data = SystemData.new sys_name, {}
+      sys_data.economy = econs[econ_index]
+      sys_data.government = govs[gov_index]
+      sys_data.tech_level = tech_level
+
+      SystemsData.add sys_data
+
+      puts
+      puts " #{sys_name} has been updated."
+      puts
+    end
+
     def display
       puts "= Oolite Trader ="
       puts
+      ask_user_to_update_system_data current_system_name
+
       puts "  Current Location: #{current_system_name} #{system_info(current_system_name)}"
       puts
       puts "  Available destinations:"
@@ -41,7 +102,7 @@ module Oolite
 
       systems = market.systems
       systems.delete current_system_name
-      systems.each_with_index do |sys,i|
+      systems.sort.each_with_index do |sys,i|
         info = system_info sys
         puts "      #{i.to_s.ljust(4)} - #{sys.ljust(14)} #{info.ljust(50)}"
       end
@@ -53,7 +114,7 @@ module Oolite
 
       dest_system = systems[choice.to_i]
 
-      puts "  -- Suggested Trades (best to worst) for #{dest_system} --"
+      puts "  -- Suggested Trades (best first) for #{dest_system} --"
       puts
       puts "    #{'Item'.ljust(14)} #{'Amt Avail'.to_s.ljust(10)} #{'PricePerUnit'.to_s.rjust(8)} #{'ProfitPerUnit'.to_s.rjust(12)}"
       puts

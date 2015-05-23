@@ -62,5 +62,12 @@ module Oolite
         tech_level: @tech_level,
       }
     end
+
+    def all_data_present?
+      return false if economy.nil? || economy.empty?
+      return false if government.nil? || government.empty?
+      return false if tech_level.nil? || tech_level.empty?
+      return true
+    end
   end
 end

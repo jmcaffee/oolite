@@ -14,6 +14,15 @@ module Oolite
       @systems ||= read_config
     end
 
+    def self.names
+      systems.keys
+    end
+
+    def self.add sys_data
+      systems[sys_data.name] = sys_data
+      write_config
+    end
+
     private
 
     def self.read_config

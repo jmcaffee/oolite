@@ -15,6 +15,14 @@ RSpec.describe SystemData do
     }
   end
 
+  let(:empty_system_data) do
+    data = {
+      economy: '',
+      government: '',
+      tech_level: ''
+    }
+  end
+
   it 'can be instantiated' do
     expect(SystemData.new('name', system_data)).to_not be nil
   end
@@ -32,5 +40,20 @@ RSpec.describe SystemData do
     actual = SystemData.new('name', system_data)
 
     expect(actual.to_yaml).to eq system_data
+  end
+
+  it 'can tell if all data is present' do
+    sysdata = SystemData.new('name', empty_system_data)
+
+    expect(sysdata.all_data_present?).to eq false
+
+    sysdata.economy = 'econ'
+    expect(sysdata.all_data_present?).to eq false
+
+    sysdata.government = 'gov'
+    expect(sysdata.all_data_present?).to eq false
+
+    sysdata.tech_level = '12'
+    expect(sysdata.all_data_present?).to eq true
   end
 end
