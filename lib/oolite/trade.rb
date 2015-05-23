@@ -45,7 +45,7 @@ module Oolite
 
       if need_update
         puts "We need to update our records for #{sys_name}"
-        result = ask "Would you like to update now (<Enter> or n)? "
+        result = ask("Would you like to update now (y/n)? ") { |q| q.default = 'y' }
         return if result.downcase == 'n'
       end
 
@@ -55,32 +55,24 @@ module Oolite
     def collect_system_data sys_name
       econs = Oolite.configuration.economies
       govs = Oolite.configuration.governments
+      prompt = ' Choice? '
 
       puts "  #{sys_name}"
-      puts
-      puts "    Economy:"
-      econs.each_with_index do |econ,i|
-        puts "      #{i} - #{econ}"
-      end
-      puts
-      econ_index = ask " Choice? "
 
       puts
-      puts "    Government:"
-      govs.each_with_index do |gov,i|
-        puts "      #{i} - #{gov}"
-      end
-      puts
-      gov_index = ask " Choice? "
+      econ = select_from econs, 'Economy', prompt
 
       puts
-      puts "    Tech Level:"
+      gov = select_from govs, 'Government', prompt
+
+      puts
+      puts "Tech Level:"
       puts
       tech_level = ask " Choice (1-12)? "
 
       sys_data = SystemData.new sys_name, {}
-      sys_data.economy = econs[econ_index]
-      sys_data.government = govs[gov_index]
+      sys_data.economy = econ
+      sys_data.government = gov
       sys_data.tech_level = tech_level
 
       SystemsData.add sys_data
@@ -90,31 +82,29 @@ module Oolite
       puts
     end
 
+    def get_destination
+      systems = market.systems
+      systems.delete current_system_name
+      systems.sort!
+
+      select_system systems, "Available destinations", "Choose your destination: "
+    end
+
     def display
       puts "= Oolite Trader ="
       puts
       ask_user_to_update_system_data current_system_name
 
+      puts
       puts "  Current Location: #{current_system_name} #{system_info(current_system_name)}"
       puts
-      puts "  Available destinations:"
+
+      dest_system = get_destination
+
+      return if dest_system == 'q'
+
       puts
-
-      systems = market.systems
-      systems.delete current_system_name
-      systems.sort.each_with_index do |sys,i|
-        info = system_info sys
-        puts "      #{i.to_s.ljust(4)} - #{sys.ljust(14)} #{info.ljust(50)}"
-      end
-      puts
-      choice = ask "    Choose your destination (q to abort): "
-
-      return if choice.downcase == 'q'
-      puts
-
-      dest_system = systems[choice.to_i]
-
-      puts "  -- Suggested Trades (best first) for #{dest_system} --"
+      puts "  -- Profitable Trades for #{dest_system} --"
       puts
       puts "    #{'Item'.ljust(14)} #{'Amt Avail'.to_s.ljust(10)} #{'PricePerUnit'.to_s.rjust(8)} #{'ProfitPerUnit'.to_s.rjust(12)}"
       puts

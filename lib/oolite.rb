@@ -1,5 +1,7 @@
 require "oolite/version"
 require 'pathname'
+require 'yaml'
+require 'highline/import'
 
 if ENV['DEBUG'].nil?
   $debug = false
@@ -142,7 +144,7 @@ module Oolite
         "Average Industrial",
         "Mainly Agricultural",
         "Mainly Industrial",
-        "Poor Agricultural"
+        "Poor Agricultural",
         "Poor Industrial",
         "Rich Agricultural",
         "Rich Industrial",
@@ -179,7 +181,6 @@ module Oolite
   end # Configuration
 end
 
-require 'yaml'
 
 # Initialize the configuration
 Oolite.configure
