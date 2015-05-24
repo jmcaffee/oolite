@@ -96,6 +96,11 @@ Now see what it suggests for trades
 **Note:** you'll need to visit more than one system, save your game,
 and run `ooupdatemarket` before you'll be able to choose any destinations.
 
+I like to use the following command line to update the market data and
+run trader
+
+    ooupdatemarket && trader
+
 * In game, make your trades/purchases
 * Travel to your destination
 * Profit
