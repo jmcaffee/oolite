@@ -15,85 +15,10 @@ module Oolite
   class Trade
     include Console
 
-    def systems_data
-      @systems_data ||= SystemsData
-    end
-
-    def system_info sys_name
-        info = ''
-        if systems_data.names.include? sys_name
-          sys_data = systems_data.systems[sys_name]
-
-          econ = sys_data.economy
-          gov = sys_data.government
-          tech = sys_data.tech_level
-
-          info = "(#{econ} - #{gov} - #{tech.to_s})"
-        end
-        info
-    end
-
-    def ask_user_to_update_system_data sys_name
-      need_update = false
-      need_update = true if !systems_data.names.include? sys_name
-      unless need_update
-        sys_data = systems_data.systems[sys_name]
-        need_update = true if !sys_data.all_data_present?
-      end
-
-      return unless need_update
-
-      if need_update
-        puts "We need to update our records for #{sys_name}"
-        result = ask("Would you like to update now (y/n)? ") { |q| q.default = 'y' }
-        return if result.downcase == 'n'
-      end
-
-      collect_system_data sys_name
-    end
-
-    def collect_system_data sys_name
-      econs = Oolite.configuration.economies
-      govs = Oolite.configuration.governments
-      prompt = ' Choice? '
-
-      puts "  #{sys_name}"
-
-      puts
-      econ = select_from econs, 'Economy', prompt
-
-      puts
-      gov = select_from govs, 'Government', prompt
-
-      puts
-      puts "Tech Level:"
-      puts
-      tech_level = ask " Choice (1-12)? "
-
-      sys_data = SystemData.new sys_name, {}
-      sys_data.economy = econ
-      sys_data.government = gov
-      sys_data.tech_level = tech_level
-
-      SystemsData.add sys_data
-
-      puts
-      puts " #{sys_name} has been updated."
-      puts
-    end
-
-    def get_destination
-      systems = market.systems
-      systems.delete current_system_name
-      systems.sort!
-
-      select_system systems, "Available destinations", "Choose your destination: "
-    end
-
     def display
       puts "= Oolite Trader ="
       puts
-      ask_user_to_update_system_data current_system_name
+      ask_user_to_update_system_data(current_system_name)
 
       puts
       puts "  Current Location: #{current_system_name} #{system_info(current_system_name)}"
@@ -138,6 +63,81 @@ module Oolite
     end
 
     private
+
+    def systems_data
+      @systems_data ||= SystemsData
+    end
+
+    def system_info sys_name
+        info = ''
+        if systems_data.names.include? sys_name
+          sys_data = systems_data.systems[sys_name]
+
+          econ = sys_data.economy
+          gov = sys_data.government
+          tech = sys_data.tech_level
+
+          info = "(#{econ} - #{gov} - #{tech.to_s})"
+        end
+        info
+    end
+
+    def ask_user_to_update_system_data sys_name
+      need_update = false
+      need_update = true if !systems_data.names.include? sys_name
+      unless need_update
+        sys_data = systems_data.systems[sys_name]
+        need_update = true if !sys_data.all_data_present?
+      end
+
+      return unless need_update
+
+      if need_update
+        puts "We need to update our records for #{sys_name}"
+        result = ask("Would you like to update now (y/n)? ") { |q| q.default = 'y' }
+        return if result.downcase == 'n'
+      end
+
+      collect_system_data sys_name
+    end
+
+    def collect_system_data sys_name
+      econs = Oolite.configuration.economies.sort
+      govs = Oolite.configuration.governments.sort
+      prompt = ' Choice? '
+
+      puts "  #{sys_name}"
+
+      puts
+      econ = select_from econs, 'Economy', prompt
+
+      puts
+      gov = select_from govs, 'Government', prompt
+
+      puts
+      puts "Tech Level:"
+      puts
+      tech_level = ask " Choice (1-14)? "
+
+      sys_data = SystemData.new sys_name, {}
+      sys_data.economy = econ
+      sys_data.government = gov
+      sys_data.tech_level = tech_level
+
+      SystemsData.add sys_data
+
+      puts
+      puts " #{sys_name} has been updated."
+      puts
+    end
+
+    def get_destination
+      systems = market.systems
+      systems.delete current_system_name
+      systems.sort!
+
+      select_system systems, "Available destinations", "Choose your destination: "
+    end
 
     def current_system_name
       Oolite.configuration.current_system_name
